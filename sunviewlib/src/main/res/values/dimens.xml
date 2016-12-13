@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="sun_horizon_bottom_margin">20dp</dimen>
+    <dimen name="sun_size">16dp</dimen>
+    <dimen name="sun_radius">8dp</dimen>
+    <dimen name="sun_text_size">12sp</dimen>
+    <dimen name="sun_text_margin">22dp</dimen>
+</resources>
