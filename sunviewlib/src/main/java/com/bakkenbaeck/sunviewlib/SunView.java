@@ -10,15 +10,12 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class SunView extends View {
     private Paint paint;
 
-    private String startLabel;
-    private String endLabel;
-    private String floatingLabel;
+    private String startLabel = "";
+    private String endLabel = "";
+    private String floatingLabel = "";
 
     private int bottom;
     private int left;
@@ -33,9 +30,6 @@ public class SunView extends View {
 
     private double[] coords;
     private boolean sunIsVisible;
-    private boolean showStartLabel;
-    private boolean showEndLabel;
-    private boolean showFloatingLabel;
 
     public SunView(final Context context) {
         super(context);
@@ -55,7 +49,6 @@ public class SunView extends View {
     private void init() {
         this.paint = new Paint();
         this.paint.setStyle(Paint.Style.FILL);
-        this.paint.setStrokeWidth(4);
         this.coords = new double[]{0.0, 0.0};
 
         initSizes();
@@ -72,12 +65,19 @@ public class SunView extends View {
      * sun_default_color (Default color)
      */
     public SunView initSizes() {
-        this.paint.setColor(ContextCompat.getColor(getContext(), com.bakkenbaeck.sunviewlib.R.color.sun_default_color));
-        this.paint.setTextSize(this.getContext().getResources().getDimensionPixelSize(com.bakkenbaeck.sunviewlib.R.dimen.sun_text_size));
-        this.textMargin = this.getContext().getResources().getDimensionPixelSize(com.bakkenbaeck.sunviewlib.R.dimen.sun_text_margin);
-        this.horizon_bottom_margin = this.getContext().getResources().getDimensionPixelSize(com.bakkenbaeck.sunviewlib.R.dimen.sun_horizon_bottom_margin);
-        this.circleRadius = this.getContext().getResources().getDimensionPixelSize(com.bakkenbaeck.sunviewlib.R.dimen.sun_radius);
+        this.paint.setColor(ContextCompat.getColor(getContext(), R.color.sun_default_color));
+        this.paint.setTextSize(this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_text_size));
+        this.textMargin = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_text_margin);
+        this.horizon_bottom_margin = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_horizon_bottom_margin);
+        this.circleRadius = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_radius);
+        this.strokeWidth = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_stroke_width);
+        this.paint.setStrokeWidth(strokeWidth);
+
         return this;
+    }
+
+    public void setStrokeWidth(final int strokeWidth) {
+        this.paint.setStrokeWidth(strokeWidth);
     }
 
     public SunView setTypeface(final Typeface typeface) {
@@ -109,6 +109,7 @@ public class SunView extends View {
         this.paint.setTextSize(textSize);
         return this;
     }
+
     public SunView setFloatingTextBottomMargin(final int textMargin) {
         this.textMargin = textMargin;
         return this;
@@ -121,16 +122,6 @@ public class SunView extends View {
 
     public SunView setHorizonMargin(final int margin) {
         this.horizon_bottom_margin = margin;
-        return this;
-    }
-
-    public SunView showFloatingLabel(final boolean showFloatingLabel) {
-        this.showFloatingLabel = showFloatingLabel;
-        return this;
-    }
-
-    public SunView setStrokeWidth(final int strokeWidth) {
-        this.strokeWidth = strokeWidth;
         return this;
     }
 
@@ -158,7 +149,7 @@ public class SunView extends View {
     }
 
     private void drawLabels(final Canvas canvas) {
-        if (this.startLabel != null && showStartLabel) {
+        if (this.startLabel != null) {
             canvas.drawText(
                     this.startLabel,
                     this.left,
@@ -166,7 +157,7 @@ public class SunView extends View {
                     this.paint);
         }
 
-        if (this.endLabel != null && showEndLabel) {
+        if (this.endLabel != null) {
             final Rect bounds = new Rect();
             this.paint.getTextBounds(
                     this.endLabel,
@@ -190,10 +181,9 @@ public class SunView extends View {
                 this.paint);
     }
 
-    private void drawSun(Canvas canvas){
+    private void drawSun(Canvas canvas) {
         drawCircle(canvas, coords);
-
-        if (sunIsVisible && showFloatingLabel) {
+        if (sunIsVisible) {
             drawFloatingLabel(canvas, coords);
         }
     }
@@ -205,22 +195,6 @@ public class SunView extends View {
                 this.width,
                 this.bottom - horizon_bottom_margin,
                 Region.Op.REPLACE);
-    }
-
-    public SunView showStartTime(final boolean show) {
-        this.showStartLabel = show;
-        return this;
-    }
-
-    public SunView showEndTime(final boolean show) {
-        this.showEndLabel = show;
-        return this;
-    }
-
-    public SunView showStartAndEndTime(final boolean startShow, final boolean endShow) {
-        this.showStartLabel = startShow;
-        this.showEndLabel = endShow;
-        return this;
     }
 
     /**
@@ -235,39 +209,15 @@ public class SunView extends View {
         if (progress > 1 || progress < 0) {
             x = 0;
             y = 0;
+            sunIsVisible = false;
+        } else {
+            sunIsVisible = true;
         }
 
         this.coords = new double[]{x, y};
         invalidate();
 
         return this;
-    }
-
-    /**
-     *
-     * @param startDate Start of the sunrise
-     * @param endDate End of the sunrise
-     */
-    public void setDateProgress(final Date startDate, final Date endDate) {
-        final long span = endDate.getTime() - startDate.getTime();
-        final long current = Calendar.getInstance().getTimeInMillis() - startDate.getTime();
-
-        final double progress = (double) current / (double) span;
-        final double position = (Math.PI + (progress * Math.PI));
-        double x = (50 + Math.cos(position) * 50) / 100;
-        double y = (Math.abs(Math.sin(position) * 100)) / 100;
-
-        if (progress > 1 || progress < 0) {
-            x = 0;
-            y = 0;
-        }
-
-        final Calendar now = Calendar.getInstance();
-        sunIsVisible = now.getTimeInMillis() >= startDate.getTime() &&
-                now.getTimeInMillis() <= endDate.getTime();
-
-        this.coords = new double[]{x, y};
-        invalidate();
     }
 
     /**
