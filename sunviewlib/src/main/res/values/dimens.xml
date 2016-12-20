@@ -6,4 +6,7 @@
     <dimen name="sun_text_size">12sp</dimen>
     <dimen name="sun_text_margin">22dp</dimen>
     <dimen name="sun_stroke_width">2dp</dimen>
+    <dimen name="sun_margin_labels">2dp</dimen>
+    <dimen name="sun_right_margin_label">2dp</dimen>
+    <dimen name="sun_left_margin_label">0dp</dimen>
 </resources>

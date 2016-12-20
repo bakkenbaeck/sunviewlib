@@ -27,6 +27,8 @@ public class SunView extends View {
     private int availableSunHeight;
     private int availableSunWidth;
     private int strokeWidth;
+    private int rightMarginLabel;
+    private int leftMarginLabel;
 
     private double[] coords;
     private boolean sunIsVisible;
@@ -60,6 +62,8 @@ public class SunView extends View {
      * sun_text_size (Default text size)
      * sun_horizon_bottom_margin (The margin from the bottom of the view to the horizon line
      * sun_radius (Radius of the sun)
+     * sun_left_margin_label (The margin to the left of the start label
+     * sun_right_margin_label (The margin to the right of the end label
      *
      * Add these values to colors.xml
      * sun_default_color (Default color)
@@ -71,6 +75,8 @@ public class SunView extends View {
         this.horizon_bottom_margin = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_horizon_bottom_margin);
         this.circleRadius = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_radius);
         this.strokeWidth = this.getContext().getResources().getDimensionPixelSize(R.dimen.sun_stroke_width);
+        this.rightMarginLabel = getContext().getResources().getDimensionPixelSize(R.dimen.sun_right_margin_label);
+        this.leftMarginLabel = getContext().getResources().getDimensionPixelSize(R.dimen.sun_left_margin_label);
         this.paint.setStrokeWidth(strokeWidth);
 
         return this;
@@ -152,7 +158,7 @@ public class SunView extends View {
         if (this.startLabel != null) {
             canvas.drawText(
                     this.startLabel,
-                    this.left,
+                    this.left + leftMarginLabel,
                     this.bottom - 1,
                     this.paint);
         }
@@ -166,7 +172,7 @@ public class SunView extends View {
                     bounds);
             canvas.drawText(
                     this.endLabel,
-                    this.right - bounds.width(),
+                    this.right - bounds.width() - rightMarginLabel,
                     this.bottom - 1,
                     this.paint);
         }
