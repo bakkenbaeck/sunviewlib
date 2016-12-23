@@ -7,7 +7,7 @@
 
 ```
 dependencies {
-    compile 'com.github.bakkenbaeck.sunviewlib:sunviewlib:v1.0.0'
+    compile 'com.github.bakkenbaeck.sunviewlib:sunviewlib:v1.0.2'
 }
 ```
 
